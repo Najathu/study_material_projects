@@ -1,0 +1,150 @@
+# ============================================================================
+#  OpenAPI 3 spec for a trimmed copy of the public "Swagger Petstore".
+#
+#  OpenAPI  = the SPECIFICATION (a standard file format that describes a REST API)
+#  Swagger  = the TOOLS around it (Swagger UI, Swagger Editor, Codegen).
+#             "Swagger 2.0" was the old name of the spec; since v3 it's "OpenAPI".
+#
+#  This file is the single source of truth. Run:
+#      dart run swagger_parser            # spec  -> Dart client + models
+#      dart run build_runner build     # models -> freezed/json code
+#  and lib/api/generated/ is rebuilt from it.
+#
+#  Paste this file into https://editor.swagger.io to see it as Swagger UI.
+# ============================================================================
+openapi: 3.0.3
+
+info:
+  title: Petstore (study copy)
+  version: 1.0.0
+  description: A small slice of https://petstore3.swagger.io used to learn OpenAPI.
+
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+
+# Tags group endpoints. swagger_parser makes one client class per tag
+# (PetClient, StoreClient).
+tags:
+  - name: pet
+  - name: store
+
+paths:
+  /pet/findByStatus:
+    get:
+      tags: [pet]
+      operationId: findPetsByStatus      # -> method name findPetsByStatus()
+      summary: Finds pets by status
+      parameters:
+        - name: status
+          in: query                       # -> ?status=available
+          required: true
+          schema:
+            $ref: '#/components/schemas/PetStatus'
+      responses:
+        '200':
+          description: A list of pets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid status value
+
+  /pet/{petId}:
+    get:
+      tags: [pet]
+      operationId: getPetById
+      summary: Find pet by ID
+      parameters:
+        - name: petId
+          in: path                        # -> /pet/42
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The pet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+
+  /pet:
+    post:
+      tags: [pet]
+      operationId: addPet
+      summary: Add a new pet to the store
+      requestBody:                        # -> JSON body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: The created pet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+
+  /store/inventory:
+    get:
+      tags: [store]
+      operationId: getInventory
+      summary: Returns pet counts by status
+      responses:
+        '200':
+          description: Map of status -> count
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:     # -> Map<String, int>
+                  type: integer
+
+# Reusable data shapes. Each schema becomes a Freezed class.
+components:
+  schemas:
+    PetStatus:
+      type: string
+      enum: [available, pending, sold]    # -> enum PetStatus
+
+    Category:
+      type: object
+      properties:
+        id:   { type: integer, format: int64 }
+        name: { type: string }
+
+    Tag:
+      type: object
+      properties:
+        id:   { type: integer, format: int64 }
+        name: { type: string }
+
+    Pet:
+      type: object
+      required: [name]                    # required -> non-nullable Dart field
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: doggie
+        category:
+          $ref: '#/components/schemas/Category'
+        photoUrls:
+          type: array
+          items: { type: string }
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        status:
+          $ref: '#/components/schemas/PetStatus'

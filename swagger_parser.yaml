@@ -1,0 +1,9 @@
+# Config for `dart run swagger_parser` (OpenAPI spec -> Dart code).
+swagger_parser:
+  schema_path: openapi/petstore.yaml
+  output_directory: lib/api/generated
+  json_serializer: freezed     # models become Freezed classes
+  use_freezed3: true           # `abstract class X with _$X` syntax (Freezed 3+/4)
+  root_client: true            # one RestClient that holds PetClient + StoreClient
+  root_client_name: PetstoreApi
+  unknown_enum_value: true     # don't crash if the server sends a new enum value

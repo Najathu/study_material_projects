@@ -1,0 +1,26 @@
+// coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, unused_import, invalid_annotation_target, unnecessary_import
+
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import 'category.dart';
+import 'pet_status.dart';
+import 'tag.dart';
+
+part 'pet.freezed.dart';
+part 'pet.g.dart';
+
+@Freezed()
+abstract class Pet with _$Pet {
+  const factory Pet({
+    required String name,
+    int? id,
+    Category? category,
+    List<String>? photoUrls,
+    List<Tag>? tags,
+    PetStatus? status,
+  }) = _Pet;
+
+  factory Pet.fromJson(Map<String, Object?> json) => _$PetFromJson(json);
+}
